@@ -1,10 +1,53 @@
 // ParameterGrid.jsx
-import React from "react";
+import React, { useRef } from "react";
 
-export const ParameterGrid = ({ param1, param2 }) => {
+export const ParameterGrid = ({ param1, param2, onParameterChange }) => {
+  const svgRef = useRef(null);
+
+  const getMousePosition = (event) => {
+    const svg = svgRef.current;
+    const rect = svg.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    // Convert screen coordinates to parameter space (-30 to 30) and round to integers
+    const paramX = Math.round((x / rect.width) * 60 - 30);
+    const paramY = Math.round((-y / rect.height) * 60 + 30);
+
+    // Clamp values to valid range
+    const clampedX = Math.max(-30, Math.min(30, paramX));
+    const clampedY = Math.max(-30, Math.min(30, paramY));
+
+    return { x: clampedX, y: clampedY };
+  };
+
+  const handleMouseDown = (event) => {
+    const { x, y } = getMousePosition(event);
+    onParameterChange(x, y);
+
+    const handleMouseMove = (moveEvent) => {
+      const pos = getMousePosition(moveEvent);
+      onParameterChange(pos.x, pos.y);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
   return (
     <div className="parameter-grid-container">
-      <svg width="400" height="400" viewBox="-50 -50 100 100">
+      <svg
+        ref={svgRef}
+        width="400"
+        height="400"
+        viewBox="-50 -50 100 100"
+        onMouseDown={handleMouseDown}
+      >
         {/* Draw grid lines */}
         <g className="grid-lines" stroke="#ccc" strokeWidth="0.5">
           {[-30, 0, 30].map((x) => (
@@ -18,15 +61,19 @@ export const ParameterGrid = ({ param1, param2 }) => {
         {/* Draw grid points */}
         {[-30, 0, 30].map((y) =>
           [-30, 0, 30].map((x) => (
-            <circle
-              key={`point-${x}-${y}`}
-              cx={x}
-              cy={-y} // Invert y to match coordinate system
-              r="2"
-              fill={x === param1 && y === param2 ? "red" : "green"}
-            />
+            <circle key={`point-${x}-${y}`} cx={x} cy={-y} r="3" fill="green" />
           ))
         )}
+
+        {/* Current position indicator */}
+        <circle
+          cx={param1}
+          cy={-param2}
+          r="5"
+          fill="red"
+          stroke="white"
+          strokeWidth="2"
+        />
       </svg>
     </div>
   );

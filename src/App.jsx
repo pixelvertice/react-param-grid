@@ -11,13 +11,9 @@ function App() {
 
   const keyPoints = [-30, 0, 30];
 
-  const [parameters, setParameters] = useState({ param1: 30, param2: -30 });
-
   const handleParameterChange = (x, y) => {
-    setParameters({
-      param1: x,
-      param2: y,
-    });
+    setParam1(x);
+    setParam2(y);
   };
 
   return (
@@ -48,11 +44,7 @@ function App() {
         <ParameterGrid
           param1={param1}
           param2={param2}
-          onPointSelect={(x, y) => {
-            setParam1(x);
-            setParam2(y);
-          }}
-          keyPoints={keyPoints}
+          onParameterChange={handleParameterChange}
         />
       )}
     </div>
