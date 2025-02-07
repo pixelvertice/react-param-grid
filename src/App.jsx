@@ -21,32 +21,48 @@ function App() {
       <h1>Parameter Control</h1>
 
       <div className="controls">
-        <ParameterSlider
-          value={param1}
-          onChange={setParam1}
-          label="Parameter 1"
-          keyPoints={keyPoints}
-        />
+        <div className="parameters-container">
+          <div className="parameter-row">
+            <label>Parameter1</label>
+            {showGrid ? (
+              <div className="value-display">{param1.toFixed(1)}</div>
+            ) : (
+              <ParameterSlider
+                value={param1}
+                onChange={setParam1}
+                keyPoints={keyPoints}
+              />
+            )}
+          </div>
 
-        <ParameterSlider
-          value={param2}
-          onChange={setParam2}
-          label="Parameter 2"
-          keyPoints={keyPoints}
-        />
+          <div className="parameter-row">
+            <label>Parameter2</label>
+            {showGrid ? (
+              <div className="value-display">{param2.toFixed(1)}</div>
+            ) : (
+              <ParameterSlider
+                value={param2}
+                onChange={setParam2}
+                keyPoints={keyPoints}
+              />
+            )}
+          </div>
+
+          {showGrid && (
+            <div className="grid-wrapper">
+              <ParameterGrid
+                param1={param1}
+                param2={param2}
+                onParameterChange={handleParameterChange}
+              />
+            </div>
+          )}
+        </div>
 
         <button className="toggle-grid" onClick={() => setShowGrid(!showGrid)}>
-          {showGrid ? "Hide Grid" : "Show Grid"}
+          {showGrid ? "Show Sliders" : "Show Grid"}
         </button>
       </div>
-
-      {showGrid && (
-        <ParameterGrid
-          param1={param1}
-          param2={param2}
-          onParameterChange={handleParameterChange}
-        />
-      )}
     </div>
   );
 }
