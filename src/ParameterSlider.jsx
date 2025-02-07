@@ -8,10 +8,18 @@ export const ParameterSlider = ({ value, onChange, label }) => {
     const svg = svgRef.current;
     const rect = svg.getBoundingClientRect();
     const x = event.clientX - rect.left;
-
-    // Convert screen coordinates to parameter space (-30 to 30) and round to integers
-    const paramX = Math.round((x / rect.width) * 60 - 30);
-
+    
+    // Calculate the actual width of the slider (distance between leftmost and rightmost dots)
+    const totalWidth = rect.width;
+    const effectiveWidth = (totalWidth * 60) / 100; // 60% of total width
+    const padding = (totalWidth - effectiveWidth) / 2;
+    
+    // Adjust x position to account for padding
+    const adjustedX = Math.max(padding, Math.min(x, totalWidth - padding));
+    
+    // Map the position to the -30 to 30 range
+    const paramX = Math.round(((adjustedX - padding) / effectiveWidth) * 60 - 30);
+    
     // Clamp values to valid range
     return Math.max(-30, Math.min(30, paramX));
   };
@@ -43,7 +51,7 @@ export const ParameterSlider = ({ value, onChange, label }) => {
             ref={svgRef}
             width="400"
             height="50"
-            viewBox="-50 -10 100 20"
+            viewBox="-35 -10 70 20"
             onMouseDown={handleMouseDown}
           >
             {/* Draw base line */}
@@ -57,7 +65,7 @@ export const ParameterSlider = ({ value, onChange, label }) => {
             />
 
             {/* Draw grid points */}
-            {[-30, -15, 0, 15, 30].map((x) => (
+            {[-30, 0, 30].map((x) => (
               <circle key={`point-${x}`} cx={x} cy={0} r="3" fill="green" />
             ))}
 

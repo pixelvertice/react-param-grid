@@ -7,18 +7,20 @@ export const ParameterGrid = ({ param1, param2, onParameterChange }) => {
   const getMousePosition = (event) => {
     const svg = svgRef.current;
     const rect = svg.getBoundingClientRect();
+    
+    // Get mouse position relative to SVG
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    // Convert screen coordinates to parameter space (-30 to 30) and round to integers
+    // Convert screen pixels to parameter values directly
     const paramX = Math.round((x / rect.width) * 60 - 30);
     const paramY = Math.round((-y / rect.height) * 60 + 30);
 
     // Clamp values to valid range
-    const clampedX = Math.max(-30, Math.min(30, paramX));
-    const clampedY = Math.max(-30, Math.min(30, paramY));
-
-    return { x: clampedX, y: clampedY };
+    return {
+      x: Math.max(-30, Math.min(30, paramX)),
+      y: Math.max(-30, Math.min(30, paramY))
+    };
   };
 
   const handleMouseDown = (event) => {
@@ -45,7 +47,7 @@ export const ParameterGrid = ({ param1, param2, onParameterChange }) => {
         ref={svgRef}
         width="400"
         height="400"
-        viewBox="-50 -50 100 100"
+        viewBox="-35 -35 70 70"
         onMouseDown={handleMouseDown}
       >
         {/* Draw grid lines */}
